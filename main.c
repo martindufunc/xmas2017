@@ -34,8 +34,8 @@
 #include <asf.h>
 
 
-//////////////////////////////////////////////////////////////////////////
-// Channel routing
+////////////////////////////////////////////////////////////////////////////////
+// Pin routing
 //       0
 //      1 2
 //       3
@@ -56,10 +56,8 @@
 #define TREE_LED8   PIN_PA24
 #define TREE_LED9   PIN_PA17
 
-//////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////
 // Function prototypes
-static void config_tree(void);
 void clear_tree(void);
 void set_tree(void);
 void tree_pattern_01(int);
@@ -69,10 +67,10 @@ void tree_pattern_04(int);
 void tree_pattern_05(int);
 void tree_pattern_06(int);
 void tree_pattern_07(int);
+static void config_tree(void);
 
 // Function pointer has to match with pattern code enum order
-void (* pattern[])(int) =
-{
+void (* pattern[])(int) = {
 	tree_pattern_01,
 	tree_pattern_02,
 	tree_pattern_03,
@@ -82,8 +80,7 @@ void (* pattern[])(int) =
 	tree_pattern_07
 };
 // Pattern code
-enum pattern_code
-{
+enum pattern_code {
 	PAT_ALTRIBBON,
 	PAT_TWINKLESTAR,
 	PAT_VALTERNATE,
@@ -94,16 +91,14 @@ enum pattern_code
 };
 
 // Transition table format
-struct transition
-{
+struct transition {
 	enum pattern_code curr_pat;
 	int pat_duration;
 	enum pattern_code next_pat;
 };
 
 // Transition table lookup: current pattern, duration, next pattern
-struct transition transition_table[] =
-{
+struct transition transition_table[] = {
 	{PAT_ALTRIBBON,     20,     PAT_TWINKLESTAR},
 	{PAT_TWINKLESTAR,   10,     PAT_VALTERNATE},
 	{PAT_VALTERNATE,    20,     PAT_RUNOFF},
@@ -113,14 +108,15 @@ struct transition transition_table[] =
 	{PAT_RAND2,         50,     PAT_ALTRIBBON}
 };
 
+int patcount = sizeof(transition_table)/sizeof(transition_table[0]);            // transition table entries count
+enum pattern_code run_pat = PAT_TWINKLESTAR;                                    // Initial pattern
+void (* run_pattern)(int);                                                      // Function pointer prototype
 
-int patcount = sizeof(transition_table)/sizeof(transition_table[0]);    // transition table entries count
-enum pattern_code run_pat = PAT_TWINKLESTAR;                            // Initial pattern
-void (* run_pattern)(int);                                              // Function pointer prototype
 
 
-//////////////////////////////////////////////////////////////////////////
-// Main
+
+////////////////////////////////////////////////////////////////////////////////
+// Main and ISR
 
 int main(void)
 {
@@ -150,7 +146,9 @@ void SysTick_Handler(void)
 }
 
 
-//////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
 // All LED patterns
 
 static void config_tree(void)
