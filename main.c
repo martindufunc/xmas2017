@@ -99,13 +99,13 @@ struct transition {
 
 // Transition table lookup: current pattern, duration, next pattern
 struct transition transition_table[] = {
-	{PAT_ALTRIBBON,     20,     PAT_TWINKLESTAR},
-	{PAT_TWINKLESTAR,   10,     PAT_VALTERNATE},
-	{PAT_VALTERNATE,    20,     PAT_RUNOFF},
-	{PAT_RUNOFF,        50,     PAT_VROUND},
-	{PAT_VROUND,        45,     PAT_RAND1},
-	{PAT_RAND1,         80,     PAT_RAND2},
-	{PAT_RAND2,         50,     PAT_ALTRIBBON}
+	{PAT_ALTRIBBON,     20,     PAT_TWINKLESTAR   },
+	{PAT_TWINKLESTAR,   10,     PAT_VALTERNATE    },
+	{PAT_VALTERNATE,    20,     PAT_RUNOFF        },
+	{PAT_RUNOFF,        50,     PAT_VROUND        },
+	{PAT_VROUND,        45,     PAT_RAND1         },
+	{PAT_RAND1,         80,     PAT_RAND2         },
+	{PAT_RAND2,         50,     PAT_ALTRIBBON     }
 };
 
 int patcount = sizeof(transition_table)/sizeof(transition_table[0]);            // transition table entries count
