@@ -69,7 +69,7 @@ void tree_pattern_06(int);
 void tree_pattern_07(int);
 static void config_tree(void);
 
-// Function pointer has to match with pattern code enum order
+// Function pointer must be in the correct order with its pattern code below
 void (* pattern[])(int) = {
 	tree_pattern_01,
 	tree_pattern_02,
@@ -100,13 +100,13 @@ struct transition {
 
 // Transition table lookup: current pattern, duration, next pattern
 struct transition transition_table[] = {
-	{PAT_ALTRIBBON,     20,     PAT_TWINKLESTAR},
-	{PAT_TWINKLESTAR,   10,     PAT_VALTERNATE},
-	{PAT_VALTERNATE,    20,     PAT_RUNOFF},
-	{PAT_RUNOFF,        50,     PAT_VROUND},
-	{PAT_VROUND,        45,     PAT_RAND1},
-	{PAT_RAND1,         80,     PAT_RAND2},
-	{PAT_RAND2,         50,     PAT_ALTRIBBON}
+	{PAT_ALTRIBBON,       20,     PAT_TWINKLESTAR},
+	{PAT_TWINKLESTAR,     10,     PAT_VALTERNATE},
+	{PAT_VALTERNATE,      20,     PAT_RUNOFF},
+	{PAT_RUNOFF,          50,     PAT_VROUND},
+	{PAT_VROUND,          45,     PAT_RAND1},
+	{PAT_RAND1,           80,     PAT_RAND2},
+	{PAT_RAND2,           50,     PAT_ALTRIBBON}
 };
 
 int patcount = sizeof(transition_table)/sizeof(transition_table[0]);            // transition table entries count
@@ -130,17 +130,17 @@ int main(void)
 
 void SysTick_Handler(void)
 {
-	static int run_count = 0;
+	static int main_tick = 0;
 	run_pattern = pattern[run_pat];
-	run_pattern(run_count++);
+	run_pattern(main_tick++);
 
 	// Checks for transition to next state
 	for (int i = 0; i < patcount; i++)
 	{
-		if ((transition_table[i].curr_pat == run_pat) && (transition_table[i].pat_duration <= run_count))
+		if ((transition_table[i].curr_pat == run_pat) && (transition_table[i].pat_duration <= main_tick))
 		{
 			run_pat = transition_table[i].next_pat;
-			run_count = 0;
+			main_tick = 0;
 			break;
 		}
 	}
@@ -198,9 +198,9 @@ void set_tree(void)
 	port_pin_set_output_level(TREE_LED9, true);
 }
 
-void tree_pattern_01(int tick_count) // Round ribbon alternate...
+void tree_pattern_01(int ptrn_tick) // Round ribbon alternate...
 {
-	if (tick_count == 0) // Initialize
+	if (ptrn_tick == 0) // Initialize
 	{
 		clear_tree();
 		port_pin_set_output_level(TREE_LED0, true);
@@ -226,18 +226,18 @@ void tree_pattern_01(int tick_count) // Round ribbon alternate...
 	port_pin_toggle_output_level(TREE_LED9);
 }
 
-void tree_pattern_02(int tick_count) // Star twinkle...
+void tree_pattern_02(int ptrn_tick) // Star twinkle...
 {
-	if (tick_count == 0) // Initialize
+	if (ptrn_tick == 0) // Initialize
 	{
 		clear_tree();
 	}
 	port_pin_toggle_output_level(TREE_LED0);
 }
 
-void tree_pattern_03(int tick_count) // 1 - 2 Vertical alternate
+void tree_pattern_03(int ptrn_tick) // 1 - 2 Vertical alternate
 {
-	if (tick_count == 0) // Initialize
+	if (ptrn_tick == 0) // Initialize
 	{
 		clear_tree();
 		port_pin_set_output_level(TREE_LED0, true);
@@ -263,38 +263,38 @@ void tree_pattern_03(int tick_count) // 1 - 2 Vertical alternate
 	port_pin_toggle_output_level(TREE_LED9);
 }
 
-void tree_pattern_04(int tick_count) // Running off...
+void tree_pattern_04(int ptrn_tick) // Running off...
 {
 	set_tree();
-	if (tick_count % 10 == 0) port_pin_set_output_level(TREE_LED0, false);
-	if (tick_count % 10 == 1) port_pin_set_output_level(TREE_LED1, false);
-	if (tick_count % 10 == 2) port_pin_set_output_level(TREE_LED2, false);
-	if (tick_count % 10 == 3) port_pin_set_output_level(TREE_LED3, false);
-	if (tick_count % 10 == 4) port_pin_set_output_level(TREE_LED4, false);
-	if (tick_count % 10 == 5) port_pin_set_output_level(TREE_LED5, false);
-	if (tick_count % 10 == 6) port_pin_set_output_level(TREE_LED6, false);
-	if (tick_count % 10 == 7) port_pin_set_output_level(TREE_LED7, false);
-	if (tick_count % 10 == 8) port_pin_set_output_level(TREE_LED8, false);
-	if (tick_count % 10 == 9) port_pin_set_output_level(TREE_LED9, false);
+	if (ptrn_tick % 10 == 0) port_pin_set_output_level(TREE_LED0, false);
+	if (ptrn_tick % 10 == 1) port_pin_set_output_level(TREE_LED1, false);
+	if (ptrn_tick % 10 == 2) port_pin_set_output_level(TREE_LED2, false);
+	if (ptrn_tick % 10 == 3) port_pin_set_output_level(TREE_LED3, false);
+	if (ptrn_tick % 10 == 4) port_pin_set_output_level(TREE_LED4, false);
+	if (ptrn_tick % 10 == 5) port_pin_set_output_level(TREE_LED5, false);
+	if (ptrn_tick % 10 == 6) port_pin_set_output_level(TREE_LED6, false);
+	if (ptrn_tick % 10 == 7) port_pin_set_output_level(TREE_LED7, false);
+	if (ptrn_tick % 10 == 8) port_pin_set_output_level(TREE_LED8, false);
+	if (ptrn_tick % 10 == 9) port_pin_set_output_level(TREE_LED9, false);
 }
 
-void tree_pattern_05(int tick_count) // Running round vertical...
+void tree_pattern_05(int ptrn_tick) // Running round vertical...
 {
 	clear_tree();
 	port_pin_set_output_level(TREE_LED0, true);
-	if (tick_count % 3 == 0)
+	if (ptrn_tick % 3 == 0)
 	{
 		port_pin_set_output_level(TREE_LED2, true);
 		port_pin_set_output_level(TREE_LED5, true);
 		port_pin_set_output_level(TREE_LED8, true);
 	}
-	if (tick_count % 3 == 1)
+	if (ptrn_tick % 3 == 1)
 	{
 		port_pin_set_output_level(TREE_LED3, true);
 		port_pin_set_output_level(TREE_LED6, true);
 		port_pin_set_output_level(TREE_LED9, true);
 	}
-	if (tick_count % 3 == 2)
+	if (ptrn_tick % 3 == 2)
 	{
 		port_pin_set_output_level(TREE_LED1, true);
 		port_pin_set_output_level(TREE_LED4, true);
@@ -302,7 +302,7 @@ void tree_pattern_05(int tick_count) // Running round vertical...
 	}
 }
 
-void tree_pattern_06(int tick_count) // Random1...
+void tree_pattern_06(int ptrn_tick) // Random1...
 {
 	clear_tree();
 	port_pin_set_output_level(TREE_LED0, rand() % 2);
@@ -317,7 +317,7 @@ void tree_pattern_06(int tick_count) // Random1...
 	port_pin_set_output_level(TREE_LED9, rand() % 2);
 }
 
-void tree_pattern_07(int tick_count) // Random 2...
+void tree_pattern_07(int ptrn_tick) // Random 2...
 {
 	clear_tree();
 	switch (rand() % 10)
